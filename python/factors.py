@@ -11,9 +11,21 @@ def factors(n):
                 factors.append(converse)
     return sorted(factors)
 
-
 def properDivisors(n):
     return factors(n)[:-1]
+
+def isPerfectNumber(n):
+    return n == sum(properDivisors(n))
+
+def isAmicableNumber(n):
+    twin = sum(properDivisors(n))
+    return n == sum(properDivisors(twin)) and twin != n
+
+def amicableNumbers(start, end):
+    return [i for i in range(start, end) if isAmicableNumber(i)]
+
+def perfectNumbers(start, end):
+    return [i for i in range(start, end) if isPerfectNumber(i)]
 
 assert factors(0) == []
 assert factors(1) == [1]
@@ -39,3 +51,6 @@ assert properDivisors(4) == [1, 2]
 assert properDivisors(13) == [1]
 assert sum(properDivisors(6)) == 6
 assert sum(properDivisors(28)) == 28
+
+assert amicableNumbers(1, 300) == [220, 284]
+assert perfectNumbers(1, 300) == [6, 28]
