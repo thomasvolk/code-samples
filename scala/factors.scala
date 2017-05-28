@@ -1,6 +1,6 @@
 import scala.math
 
-def factors(n: Int) = (1 until (math.sqrt(n).toInt + 1)).filter( (i) => n % i == 0).map( i => List(i, n / i)).flatten.toSet.toList.sorted
+def factors(n: Int) = (1 until (math.sqrt(n).toInt + 1)).filter( (i) => n % i == 0).map( i => List(i, n / i)).flatten.toList.sorted
 def properDivisors(n: Int) = factors(n).reverse.drop(1).reverse
 
 val factorsTestData = Seq(
