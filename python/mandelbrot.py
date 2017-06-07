@@ -1,6 +1,33 @@
 #!/usr/bin/env python3
 from tkinter import *
 
+class ColorCalclator(object):
+    def __init__(self, numRange):
+        self.colorStep = 255.0 / numRange
+        self.numRange = numRange
+    
+    def color(self, i):
+        # blue
+        if i < self.numRange / 2:
+            blue = 0
+        else:
+            blue = (i - self.numRange / 2) * self.colorStep
+        # green
+        if i > self.numRange / 2:
+            green = 2 * (self.numRange -i) * self.colorStep
+        else:
+            green = 2 * i * self.colorStep
+        # red
+        if i > self.numRange / 2:
+            red = 0
+        else:
+            red = 255 - 2 * i * self.colorStep;
+        return "#%.2x%.2x%.2x" % (int(red), int(green), int(blue))
+
+    def bg(self):
+        return "#000000"
+        
+
 class Mandelbrot(Frame):
     def __init__(self, master=None, **kw):
         super().__init__(master)
@@ -16,7 +43,7 @@ class Mandelbrot(Frame):
         self.canvas.pack()
 
     def draw(self, step, iterations):
-        colorStep = 255.0 / iterations
+        colorCalc = ColorCalclator(iterations)
         width, height = self.size
         for x in range(width):
             for y in range(height):
@@ -26,33 +53,10 @@ class Mandelbrot(Frame):
                     for i in range(iterations):
                         nextpoint = nextpoint * nextpoint + point
                         if abs(nextpoint) >= 2: break
-                        color = self.getColor(iterations, colorStep, i)
+                        color = colorCalc.color(i)
                 else:
-                    color = "#000000"
-                self._drawDot(x, y, color)
-
-    def _drawDot(self, x, y, color):
-        self.canvas.create_line(x, y, x+1, y+1, fill = color)
-        
-
-    def getColor(self, iterations, colorStep, i):
-        # blue
-        if i < iterations / 2:
-            blue = 0
-        else:
-            blue = (i - iterations / 2) * colorStep
-        # green
-        if i > iterations / 2:
-            green = 2 * (iterations -i) * colorStep
-        else:
-            green = 2 * i * colorStep
-        # red
-        if i > iterations / 2:
-            red = 0
-        else:
-            red = 255 - 2 * i * colorStep;
-        return "#%.2x%.2x%.2x" % (int(red), int(green), int(blue))
-
+                    color = colorCalc.bg()
+                self.canvas.create_line(x, y, x+1, y+1, fill = color)
 
 master = Tk()
 
