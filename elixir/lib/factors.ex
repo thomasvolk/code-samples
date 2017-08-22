@@ -1,6 +1,9 @@
 defmodule Factors do
+  def factors(n) when n < 1 do
+     []
+  end
   def factors(n) do
-     factors(n, round(:math.sqrt(n) + 1), [])
+     factors(n, round(:math.sqrt(n)) + 1, [])
   end
   defp factors(n, i, results) when i > 0 do
     case rem(n, i) do
