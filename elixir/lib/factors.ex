@@ -15,6 +15,6 @@ defmodule Factors do
     end
   end
   defp factors(_, i, results) when i < 1 do
-     Enum.sort(Enum.uniq(results))
+     results |> Enum.uniq |> Enum.sort
   end
 end
