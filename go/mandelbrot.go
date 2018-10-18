@@ -18,26 +18,35 @@ type Mandelbrot struct {
 	height     int
 }
 
-func (mandelbrot *Mandelbrot) draw() *image.RGBA {
+func (mandelbrot *Mandelbrot) draw(outputfile string) {
 	var img = image.NewRGBA(image.Rect(0, 0, mandelbrot.width, mandelbrot.height))
 	for x := 0; x < mandelbrot.width; x++ {
 		for y := 0; y < mandelbrot.height; y++ {
-			color := color.RGBA{0x00, 0x00, 0x00, 0xff}
-			point := complex(mandelbrot.xmin+float64(x)*mandelbrot.step,
-				mandelbrot.ymin+float64(y)*mandelbrot.step)
-			if cmplx.Abs(point) < 2 {
-				nextPoint := 0 + 0i
-				for i := 0; i < mandelbrot.iterations; i++ {
-					nextPoint = nextPoint*nextPoint + point
-					if cmplx.Abs(nextPoint) < 2 {
-						color = mandelbrot.calculateColor(i)
-					}
-				}
-			}
-			img.Set(int(x), int(y), color)
+			mandelbrot.drawPoint(img, x, y)
 		}
 	}
-	return img
+	f, err := os.Create(outputfile)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	png.Encode(f, img)
+}
+
+func (mandelbrot *Mandelbrot) drawPoint(img *image.RGBA, x int, y int) {
+	color := color.RGBA{0x00, 0x00, 0x00, 0xff}
+	point := complex(mandelbrot.xmin+float64(x)*mandelbrot.step,
+		mandelbrot.ymin+float64(y)*mandelbrot.step)
+	if cmplx.Abs(point) < 2 {
+		nextPoint := 0 + 0i
+		for i := 0; i < mandelbrot.iterations; i++ {
+			nextPoint = nextPoint*nextPoint + point
+			if cmplx.Abs(nextPoint) < 2 {
+				color = mandelbrot.calculateColor(i)
+			}
+		}
+	}
+	img.Set(int(x), int(y), color)
 }
 
 func (mandelbrot *Mandelbrot) colorStep() int {
@@ -87,11 +96,5 @@ func main() {
 		width:      width,
 		height:     height,
 	}
-	img := m.draw()
-	f, err := os.Create(outputfile)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	png.Encode(f, img)
+	m.draw(outputfile)
 }
