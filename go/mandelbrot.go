@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"math/cmplx"
 	"os"
+	"sync"
 )
 
 type Mandelbrot struct {
@@ -20,11 +21,18 @@ type Mandelbrot struct {
 
 func (mandelbrot *Mandelbrot) draw(outputfile string) {
 	var img = image.NewRGBA(image.Rect(0, 0, mandelbrot.width, mandelbrot.height))
+	var wg sync.WaitGroup
+	wg.Add(mandelbrot.width * mandelbrot.height)
 	for x := 0; x < mandelbrot.width; x++ {
 		for y := 0; y < mandelbrot.height; y++ {
-			mandelbrot.drawPoint(img, x, y)
+			go func(image *image.RGBA, px int, py int) {
+				defer wg.Done()
+				mandelbrot.drawPoint(image, px, py)
+			}(img, x, y)
 		}
 	}
+	wg.Wait()
+
 	f, err := os.Create(outputfile)
 	if err != nil {
 		panic(err)
