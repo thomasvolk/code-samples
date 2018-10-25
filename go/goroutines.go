@@ -45,6 +45,25 @@ type History struct {
 	sendHistory    chan int64
 	receiveHistory chan int64
 	messagesTotal  int
+	buffer         chan int
+}
+
+type StringBuffer struct {
+	buffer bytes.Buffer
+}
+
+func (sb *StringBuffer) String() string {
+	return sb.buffer.String()
+}
+
+func (sb *StringBuffer) MultiAdd(item string, l int) {
+	for i := 0; i < l; i++ {
+		sb.Add(item)
+	}
+}
+
+func (sb *StringBuffer) Add(item string) {
+	sb.buffer.WriteString(item)
 }
 
 func (h History) run() {
@@ -60,14 +79,11 @@ func (h History) run() {
 			received++
 			receivedTotal++
 		case <-time.After(h.timeframe):
-			var b bytes.Buffer
-			b.WriteString("|")
-			for i := 0; i < send; i++ {
-				b.WriteString("S")
-			}
-			for i := 0; i < received; i++ {
-				b.WriteString("R")
-			}
+			var b StringBuffer
+			b.Add("|")
+			b.MultiAdd(".", len(h.buffer))
+			b.MultiAdd("S", send)
+			b.MultiAdd("R", received)
 			fmt.Println(b.String())
 			send = 0
 			received = 0
@@ -106,7 +122,7 @@ func main() {
 	go func(h History) {
 		defer historyWg.Done()
 		h.run()
-	}(History{timeframe, sendHistory, receiveHistory, messages})
+	}(History{timeframe, sendHistory, receiveHistory, messages, workerBuffer})
 
 	for i := 0; i < worker; i++ {
 		w := Worker{waittime, workerBuffer, receiveHistory}
