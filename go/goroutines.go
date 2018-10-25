@@ -21,9 +21,9 @@ func tick() int64 {
 	return now() - START_TIME
 }
 
-func workerRoutine(wg *sync.WaitGroup, i int, timeout time.Duration, c chan int) {
+func workerRoutine(wg *sync.WaitGroup, i int, timeout time.Duration, workerBuffer chan int) {
 	defer wg.Done()
-	for v := range c {
+	for v := range workerBuffer {
 		if v == POISON_PILL {
 			break
 		} else {
@@ -31,6 +31,10 @@ func workerRoutine(wg *sync.WaitGroup, i int, timeout time.Duration, c chan int)
 			time.Sleep(timeout)
 		}
 	}
+}
+
+func historyRoutine() {
+
 }
 
 func main() {
@@ -44,23 +48,23 @@ func main() {
 	flag.DurationVar(&timeout, "timeout", 1*time.Second, "timeout")
 	flag.Parse()
 
-	c := make(chan int, buffer)
-	defer close(c)
+	workerBuffer := make(chan int, buffer)
+	defer close(workerBuffer)
 
 	var workerWg sync.WaitGroup
 	workerWg.Add(worker)
 
 	for i := 0; i < worker; i++ {
-		go workerRoutine(&workerWg, i, timeout, c)
+		go workerRoutine(&workerWg, i, timeout, workerBuffer)
 	}
 
 	for i := 0; i < messages; i++ {
 		fmt.Printf("[MAIN] ; %012d ; send ; %d\n", tick(), i)
-		c <- i
+		workerBuffer <- i
 	}
 
 	for i := 0; i < worker; i++ {
-		c <- POISON_PILL
+		workerBuffer <- POISON_PILL
 	}
 
 	workerWg.Wait()
