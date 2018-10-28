@@ -1,0 +1,3 @@
+FROM scratch
+ADD mandelbrot /
+CMD ["/mandelbrot", "-serve"]

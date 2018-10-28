@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 
-	mandelbrot "./mandelbrot"
+	mandelbrot "./lib"
 )
 
 func writeFile(outputfile string, image *image.RGBA) {

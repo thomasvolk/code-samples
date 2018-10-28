@@ -1,3 +1,5 @@
 *.png
 mandelbrot_handler
 *.zip
+webserver
+mandelbrot

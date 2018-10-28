@@ -11,9 +11,9 @@ lambda: deps
 	zip mandelbrot_handler.zip ./mandelbrot_handler
 
 docker:
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o webserver webserver.go 
-	docker build -t go-webserver -f Dockerfile.webserver .
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o mandelbrot mandelbrot.go 
+	docker build -t mandelbrot -f Dockerfile.mandelbrot .
 
 run-docker:
-	docker run -p 9999:8080 go-webserver
+	docker run -p 9999:8080 mandelbrot
 	

@@ -6,7 +6,7 @@ import (
 	"image/png"
 	"net/http"
 
-	mandelbrot "./mandelbrot"
+	mandelbrot "./lib"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
