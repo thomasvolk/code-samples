@@ -2,11 +2,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
 	"math/cmplx"
+	"net/http"
 	"os"
+	"strconv"
 	"sync"
 )
 
@@ -71,6 +74,36 @@ func (mandelbrot *Mandelbrot) calculateColor(i int) color.RGBA {
 	return color.RGBA{uint8(red), uint8(green), uint8(blue), 0xff}
 }
 
+func writeFile(outputfile string, image *image.RGBA) {
+	f, err := os.Create(outputfile)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	png.Encode(f, image)
+}
+
+func ForParam(r *http.Request, param string, f func(value float64)) {
+	values, ok := r.URL.Query()[param]
+	if ok {
+		fval, err := strconv.ParseFloat(values[0], 64)
+		if err == nil {
+			f(fval)
+		}
+	}
+}
+
+func drawHandler(m Mandelbrot) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		ForParam(r, "xmin", func(value float64) { m.xmin = value })
+		ForParam(r, "ymin", func(value float64) { m.ymin = value })
+		ForParam(r, "step", func(value float64) { m.step = value })
+		image := m.draw()
+		png.Encode(w, image)
+	}
+}
+
 func main() {
 	var xmin float64
 	var ymin float64
@@ -79,6 +112,8 @@ func main() {
 	var width int
 	var height int
 	var outputfile string
+	var serve bool
+	var port int
 
 	flag.Float64Var(&xmin, "xmin", -2, "xmin")
 	flag.Float64Var(&ymin, "ymin", -2, "ymin")
@@ -87,6 +122,8 @@ func main() {
 	flag.IntVar(&width, "width", 400, "width")
 	flag.IntVar(&height, "height", 400, "height")
 	flag.StringVar(&outputfile, "outputfile", "mandelbrot.png", "outputfile")
+	flag.BoolVar(&serve, "serve", false, "start http server")
+	flag.IntVar(&port, "port", 8080, "http port")
 
 	flag.Parse()
 
@@ -98,12 +135,14 @@ func main() {
 		width:      width,
 		height:     height,
 	}
-	image := m.draw()
 
-	f, err := os.Create(outputfile)
-	if err != nil {
-		panic(err)
+	if serve {
+		http.HandleFunc("/", drawHandler(m))
+		if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
+			panic(err)
+		}
+	} else {
+		image := m.draw()
+		writeFile(outputfile, image)
 	}
-	defer f.Close()
-	png.Encode(f, image)
 }
