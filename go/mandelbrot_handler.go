@@ -17,7 +17,7 @@ func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRes
 		Xmin:       -2.0,
 		Ymin:       -2.0,
 		Step:       0.01,
-		Iterations: 1,
+		Iterations: 100,
 		Width:      400,
 		Height:     400,
 	}
@@ -34,6 +34,16 @@ func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRes
 	}, nil
 }
 
+/*
+API-GAteway Binary Support:
+  Under the selected API in the primary navigation panel, choose Settings.
+  In the Settings pane, choose Add Binary Media Type in the Binary Media Types section.
+
+  image/png
+
+Test:
+  curl -H "Accept: image/png" https://XXXX.execute-api.us-east-1.amazonaws.com/STAGE/ -o test.png
+*/
 func main() {
 	lambda.Start(HandleRequest)
 }
