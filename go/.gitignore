@@ -1,2 +1,3 @@
 *.png
-webserver
+mandelbrot_handler
+*.zip
