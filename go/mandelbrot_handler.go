@@ -24,9 +24,13 @@ func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRes
 	image := m.Draw()
 	buf := new(bytes.Buffer)
 	png.Encode(buf, image)
+	headers := make(map[string]string)
+	headers["Content-Type"] = "image/png"
 	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Body:       base64.StdEncoding.EncodeToString(buf.Bytes()),
+		StatusCode:      http.StatusOK,
+		Body:            base64.StdEncoding.EncodeToString(buf.Bytes()),
+		Headers:         headers,
+		IsBase64Encoded: true,
 	}, nil
 }
 
