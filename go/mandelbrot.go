@@ -19,7 +19,7 @@ type Mandelbrot struct {
 	height     int
 }
 
-func (mandelbrot *Mandelbrot) draw(outputfile string) {
+func (mandelbrot *Mandelbrot) draw() *image.RGBA {
 	var img = image.NewRGBA(image.Rect(0, 0, mandelbrot.width, mandelbrot.height))
 	var wg sync.WaitGroup
 	wg.Add(mandelbrot.width * mandelbrot.height)
@@ -32,13 +32,7 @@ func (mandelbrot *Mandelbrot) draw(outputfile string) {
 		}
 	}
 	wg.Wait()
-
-	f, err := os.Create(outputfile)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	png.Encode(f, img)
+	return img
 }
 
 func (mandelbrot *Mandelbrot) drawPoint(img *image.RGBA, x int, y int) {
@@ -104,5 +98,12 @@ func main() {
 		width:      width,
 		height:     height,
 	}
-	m.draw(outputfile)
+	image := m.draw()
+
+	f, err := os.Create(outputfile)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	png.Encode(f, image)
 }
