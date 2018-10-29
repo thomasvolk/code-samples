@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
+	"fmt"
 	"image/png"
 	"net/http"
 
@@ -25,25 +26,24 @@ func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRes
 	buf := new(bytes.Buffer)
 	png.Encode(buf, image)
 	headers := make(map[string]string)
-	headers["Content-Type"] = "image/png"
+	headers["Content-Type"] = "text/html"
+	body := fmt.Sprintf(`<!DOCTYPE html>
+	<html>
+  		<head>
+    		<title>Mandelbrot</title>
+  		</head>
+		<body>
+		  <img src="data:image/png;base64, %s" alt="Mandelbrot" />
+		</body>
+	</html>`, base64.StdEncoding.EncodeToString(buf.Bytes()))
 	return events.APIGatewayProxyResponse{
 		StatusCode:      http.StatusOK,
-		Body:            base64.StdEncoding.EncodeToString(buf.Bytes()),
+		Body:            body,
 		Headers:         headers,
-		IsBase64Encoded: true,
+		IsBase64Encoded: false,
 	}, nil
 }
 
-/*
-API-GAteway Binary Support:
-  Under the selected API in the primary navigation panel, choose Settings.
-  In the Settings pane, choose Add Binary Media Type in the Binary Media Types section.
-
-  image/png
-
-Test:
-  curl -H "Accept: image/png" https://XXXX.execute-api.us-east-1.amazonaws.com/STAGE/ -o test.png
-*/
 func main() {
 	lambda.Start(HandleRequest)
 }
