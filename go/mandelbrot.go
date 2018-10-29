@@ -21,7 +21,7 @@ func writeFile(outputfile string, image *image.RGBA) {
 	png.Encode(f, image)
 }
 
-func forParam(r *http.Request, param string, f func(value float64)) {
+func forQueryParam(r *http.Request, param string, f func(value float64)) {
 	values, ok := r.URL.Query()[param]
 	if ok {
 		fval, err := strconv.ParseFloat(values[0], 64)
@@ -34,9 +34,10 @@ func forParam(r *http.Request, param string, f func(value float64)) {
 func drawHandler(m mandelbrot.Mandelbrot) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
-		forParam(r, "xmin", func(value float64) { m.Xmin = value })
-		forParam(r, "ymin", func(value float64) { m.Ymin = value })
-		forParam(r, "step", func(value float64) { m.Step = value })
+		forQueryParam(r, "xmin", func(value float64) { m.Xmin = value })
+		forQueryParam(r, "ymin", func(value float64) { m.Ymin = value })
+		forQueryParam(r, "step", func(value float64) { m.Step = value })
+		forQueryParam(r, "iterations", func(value float64) { m.Iterations = int(value) })
 		image := m.Draw()
 		png.Encode(w, image)
 	}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image/png"
 	"net/http"
+	"strconv"
 
 	mandelbrot "./lib"
 
@@ -13,7 +14,17 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func forQueryParam(r *events.APIGatewayProxyRequest, param string, f func(value float64)) {
+	value, ok := r.QueryStringParameters[param]
+	if ok {
+		fval, err := strconv.ParseFloat(value, 64)
+		if err == nil {
+			f(fval)
+		}
+	}
+}
+
+func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	m := mandelbrot.Mandelbrot{
 		Xmin:       -2.0,
 		Ymin:       -2.0,
@@ -22,6 +33,10 @@ func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRes
 		Width:      400,
 		Height:     400,
 	}
+	forQueryParam(&r, "xmin", func(value float64) { m.Xmin = value })
+	forQueryParam(&r, "ymin", func(value float64) { m.Ymin = value })
+	forQueryParam(&r, "step", func(value float64) { m.Step = value })
+	forQueryParam(&r, "iterations", func(value float64) { m.Iterations = int(value) })
 	image := m.Draw()
 	buf := new(bytes.Buffer)
 	png.Encode(buf, image)
