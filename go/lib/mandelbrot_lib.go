@@ -40,9 +40,10 @@ func (mandelbrot *Mandelbrot) drawPoint(img *image.RGBA, x int, y int) {
 		nextPoint := 0 + 0i
 		for i := 0; i < mandelbrot.Iterations; i++ {
 			nextPoint = nextPoint*nextPoint + point
-			if cmplx.Abs(nextPoint) < 2 {
-				color = mandelbrot.calculateColor(i)
+			if cmplx.Abs(nextPoint) >= 2 {
+				break
 			}
+			color = mandelbrot.calculateColor(i)
 		}
 	}
 	img.Set(int(x), int(y), color)
