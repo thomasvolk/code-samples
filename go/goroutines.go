@@ -126,10 +126,10 @@ func main() {
 
 	for i := 0; i < worker; i++ {
 		w := Worker{waittime, workerBuffer, receiveHistory}
-		go func(w Worker) {
+		go func(wo Worker, number int) {
 			defer workerWg.Done()
-			w.run(i)
-		}(w)
+			wo.run(number)
+		}(w, i)
 	}
 
 	for i := 0; i < messages; i++ {
