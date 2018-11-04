@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"net/http"
 )
 
@@ -11,8 +13,13 @@ func health(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var port int
+	flag.IntVar(&port, "port", 8080, "http port")
+	flag.Parse()
+
+	fmt.Printf("start server listen to port %d\n", port)
 	http.HandleFunc("/", health)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		panic(err)
 	}
 }

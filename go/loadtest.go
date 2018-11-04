@@ -43,7 +43,7 @@ func (w Worker) run(i int) {
 			break
 		} else {
 			status := w.get(w.url)
-			log.Printf("Worker[%d] open %s => %s\n", i, w.url, status)
+			log.Printf("Worker[%d] request[%d] open %s => %s\n", i, v, w.url, status)
 		}
 	}
 }
@@ -61,6 +61,7 @@ func main() {
 
 	if url == "" {
 		fmt.Printf("usage %s -url <url>\n", os.Args[0])
+		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
