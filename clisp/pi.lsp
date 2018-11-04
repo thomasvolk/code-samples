@@ -11,6 +11,5 @@
     val
   )
 )
-
-(setq p (pi_step 200 3 4 3))
+(defvar p (pi_step 20000 3 4 3))
 (format t "~% pi=~d " (float p))
