@@ -6,13 +6,13 @@ import (
 	"math"
 )
 
-func item(result chan float64, count uint, value float64, num float64, e float64) {
+func piStep(result chan float64, count uint, value float64, num float64, e float64) {
 	if count == 0 {
 		result <- value
 		return
 	}
 	newValue := value + (num / (math.Pow(e, 3) - e))
-	go item(result, count-1, newValue, num*-1, e+2)
+	go piStep(result, count-1, newValue, num*-1, e+2)
 }
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	value := float64(3)
 
 	result := make(chan float64)
-	item(result, count, value, num, e)
+	piStep(result, count, value, num, e)
 
 	pi := <-result
 	fmt.Printf("Count of iterations=%d\n\n", count)
