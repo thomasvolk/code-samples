@@ -1,3 +1,4 @@
+(proclaim '(optimize speed))
 
 (defun pi_step (cnt val num e) 
   (if (not (= 0 cnt))
