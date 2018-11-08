@@ -52,22 +52,22 @@ func (mandelbrot *Mandelbrot) drawPoint(img *image.RGBA, x int, y int, xStep flo
 	img.Set(int(x), int(y), color)
 }
 
-func (mandelbrot *Mandelbrot) colorStep() int {
-	return 255 / mandelbrot.Iterations
+func (mandelbrot *Mandelbrot) colorStep() float64 {
+	return 255.0 / float64(mandelbrot.Iterations)
 }
 
 func (mandelbrot *Mandelbrot) calculateColor(i int) color.RGBA {
-	blue := 0
-	green := 2 * i * mandelbrot.colorStep()
-	red := 0
+	blue := 0.0
+	green := 2.0 * float64(i) * mandelbrot.colorStep()
+	red := 0.0
 	if i >= mandelbrot.Iterations/2 {
-		blue = (i - mandelbrot.Iterations/2) * mandelbrot.colorStep()
+		blue = (float64(i) - float64(mandelbrot.Iterations)/2.0) * mandelbrot.colorStep()
 	}
 	if i > mandelbrot.Iterations/2 {
-		green = 2 * (mandelbrot.Iterations - i) * mandelbrot.colorStep()
+		green = float64(2*(mandelbrot.Iterations-i)) * mandelbrot.colorStep()
 	}
 	if i <= mandelbrot.Iterations/2 {
-		red = 255 - 2*i*mandelbrot.colorStep()
+		red = 255.0 - 2.0*float64(i)*mandelbrot.colorStep()
 	}
 	return color.RGBA{uint8(red), uint8(green), uint8(blue), 0xff}
 }
