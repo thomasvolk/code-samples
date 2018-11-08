@@ -34,9 +34,10 @@ func forQueryParam(r *http.Request, param string, f func(value float64)) {
 func drawHandler(m mandelbrot.Mandelbrot) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
-		forQueryParam(r, "xmin", func(value float64) { m.Xmin = value })
-		forQueryParam(r, "ymin", func(value float64) { m.Ymin = value })
-		forQueryParam(r, "step", func(value float64) { m.Step = value })
+		forQueryParam(r, "xstart", func(value float64) { m.Xstart = value })
+		forQueryParam(r, "xend", func(value float64) { m.Xend = value })
+		forQueryParam(r, "ystart", func(value float64) { m.Ystart = value })
+		forQueryParam(r, "yend", func(value float64) { m.Yend = value })
 		forQueryParam(r, "iterations", func(value float64) { m.Iterations = int(value) })
 		image := m.Draw()
 		png.Encode(w, image)
@@ -44,9 +45,10 @@ func drawHandler(m mandelbrot.Mandelbrot) func(w http.ResponseWriter, r *http.Re
 }
 
 func main() {
-	var xmin float64
-	var ymin float64
-	var step float64
+	var xstart float64
+	var xend float64
+	var ystart float64
+	var yend float64
 	var iterations int
 	var width int
 	var height int
@@ -54,12 +56,13 @@ func main() {
 	var serve bool
 	var port int
 
-	flag.Float64Var(&xmin, "xmin", -2, "xmin")
-	flag.Float64Var(&ymin, "ymin", -2, "ymin")
-	flag.Float64Var(&step, "step", 0.01, "step")
+	flag.Float64Var(&xstart, "xstart", -1.6, "xstart")
+	flag.Float64Var(&xend, "xend", 0.2, "xend")
+	flag.Float64Var(&ystart, "ystart", -1.2, "ystart")
+	flag.Float64Var(&yend, "yend", 1.2, "yend")
 	flag.IntVar(&iterations, "iterations", 100, "iterations")
 	flag.IntVar(&width, "width", 400, "width")
-	flag.IntVar(&height, "height", 400, "height")
+	flag.IntVar(&height, "height", 300, "height")
 	flag.StringVar(&outputfile, "outputfile", "mandelbrot.png", "outputfile")
 	flag.BoolVar(&serve, "serve", false, "start http server")
 	flag.IntVar(&port, "port", 8080, "http port")
@@ -67,9 +70,10 @@ func main() {
 	flag.Parse()
 
 	m := mandelbrot.Mandelbrot{
-		Xmin:       xmin,
-		Ymin:       ymin,
-		Step:       step,
+		Xstart:     xstart,
+		Xend:       yend,
+		Ystart:     ystart,
+		Yend:       yend,
 		Iterations: iterations,
 		Width:      width,
 		Height:     height,

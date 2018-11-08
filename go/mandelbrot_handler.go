@@ -26,16 +26,18 @@ func forQueryParam(r *events.APIGatewayProxyRequest, param string, f func(value 
 
 func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	m := mandelbrot.Mandelbrot{
-		Xmin:       -2.0,
-		Ymin:       -2.0,
-		Step:       0.01,
+		Xstart:     -1.6,
+		Xend:       -0.2,
+		Ystart:     -1.2,
+		Yend:       1.2,
 		Iterations: 100,
 		Width:      400,
 		Height:     400,
 	}
-	forQueryParam(&r, "xmin", func(value float64) { m.Xmin = value })
-	forQueryParam(&r, "ymin", func(value float64) { m.Ymin = value })
-	forQueryParam(&r, "step", func(value float64) { m.Step = value })
+	forQueryParam(&r, "xstart", func(value float64) { m.Xstart = value })
+	forQueryParam(&r, "xend", func(value float64) { m.Xend = value })
+	forQueryParam(&r, "ystart", func(value float64) { m.Ystart = value })
+	forQueryParam(&r, "yend", func(value float64) { m.Yend = value })
 	forQueryParam(&r, "iterations", func(value float64) { m.Iterations = int(value) })
 	image := m.Draw()
 	buf := new(bytes.Buffer)
