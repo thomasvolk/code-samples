@@ -39,35 +39,35 @@ func (mandelbrot *Mandelbrot) drawPoint(img *image.RGBA, x int, y int, xStep flo
 	color := color.RGBA{0x00, 0x00, 0x00, 0xff}
 	point := complex((float64(x)*xStep)+mandelbrot.Xstart,
 		(float64(y)*yStep)+mandelbrot.Ystart)
-	if cmplx.Abs(point) < 2 {
-		nextPoint := 0 + 0i
-		for i := 0; i < mandelbrot.Iterations; i++ {
-			nextPoint = nextPoint*nextPoint + point
-			if cmplx.Abs(nextPoint) >= 2 {
-				break
-			}
-			color = mandelbrot.calculateColor(i)
+	nextPoint := 0 + 0i
+	for i := 0; i < mandelbrot.Iterations; i++ {
+		nextPoint = nextPoint*nextPoint + point
+		if cmplx.Abs(nextPoint) >= 2 {
+			break
 		}
+		color = mandelbrot.calculateColor(i)
 	}
+
 	img.Set(int(x), int(y), color)
 }
 
-func (mandelbrot *Mandelbrot) colorStep() float64 {
-	return 255.0 / float64(mandelbrot.Iterations)
-}
-
 func (mandelbrot *Mandelbrot) calculateColor(i int) color.RGBA {
+	colorStep := 255.0 / float64(mandelbrot.Iterations)
 	blue := 0.0
-	green := 2.0 * float64(i) * mandelbrot.colorStep()
+	green := 2.0 * float64(i)
 	red := 0.0
 	if i >= mandelbrot.Iterations/2 {
-		blue = (float64(i) - float64(mandelbrot.Iterations)/2.0) * mandelbrot.colorStep()
+		blue = (float64(i) - float64(mandelbrot.Iterations)/2.0)
 	}
 	if i > mandelbrot.Iterations/2 {
-		green = float64(2*(mandelbrot.Iterations-i)) * mandelbrot.colorStep()
+		green = float64(2 * (mandelbrot.Iterations - i))
 	}
 	if i <= mandelbrot.Iterations/2 {
-		red = 255.0 - 2.0*float64(i)*mandelbrot.colorStep()
+		red = 255.0 - 2.0*float64(i)
 	}
-	return color.RGBA{uint8(red), uint8(green), uint8(blue), 0xff}
+	return color.RGBA{
+		uint8(red * colorStep),
+		uint8(green * colorStep),
+		uint8(blue * colorStep),
+		0xff}
 }
