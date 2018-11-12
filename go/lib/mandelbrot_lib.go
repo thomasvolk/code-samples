@@ -37,17 +37,17 @@ func (m *Mandelbrot) Draw() *image.RGBA {
 
 func (m *Mandelbrot) drawPoint(img *image.RGBA, x int, y int, xStep float64, yStep float64) {
 	color := color.RGBA{0x00, 0x00, 0x00, 0xff}
-	point := complex((float64(x)*xStep)+m.Xstart,
+	c := complex((float64(x)*xStep)+m.Xstart,
 		(float64(y)*yStep)+m.Ystart)
-	nextPoint := 0 + 0i
-	for i := 0; i < m.Iterations; i++ {
-		nextPoint = nextPoint*nextPoint + point
-		if cmplx.Abs(nextPoint) >= 2 {
+	z := 0 + 0i
+	i := 0
+	for ; i < m.Iterations; i++ {
+		z = z*z + c
+		if cmplx.Abs(z) >= 2 {
 			break
 		}
-		color = m.calculateColor(i)
 	}
-
+	color = m.calculateColor(i)
 	img.Set(int(x), int(y), color)
 }
 
