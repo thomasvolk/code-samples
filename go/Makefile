@@ -2,6 +2,13 @@ GOPATH := $(PWD)
 
 all: lambda docker
 
+clean:
+	rm -f mandelbrot
+	rm -f webserver
+
+mandelbrot:
+	go build mandelbrot.go
+
 deps:
 	go get "github.com/aws/aws-lambda-go/events"
 	go get "github.com/aws/aws-lambda-go/lambda"
