@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	mandelbrot "./lib"
+	mandelbrot "./lib/mandelbrot"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
