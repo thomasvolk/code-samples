@@ -26,8 +26,8 @@ func forQueryParam(r *events.APIGatewayProxyRequest, param string, f func(value 
 
 func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	m := mandelbrot.Mandelbrot{
-		Xstart:     -1.6,
-		Xend:       -0.2,
+		Xstart:     -2.0,
+		Xend:       1.2,
 		Ystart:     -1.2,
 		Yend:       1.2,
 		Iterations: 100,
