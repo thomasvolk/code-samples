@@ -19,10 +19,12 @@ type Mandelbrot struct {
 
 func (m *Mandelbrot) Draw() *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, m.Width, m.Height))
-	var wg sync.WaitGroup
 	xStep := (m.Xend - m.Xstart) / float64(m.Width)
 	yStep := (m.Yend - m.Ystart) / float64(m.Height)
+
+	var wg sync.WaitGroup
 	wg.Add(m.Width * m.Height)
+
 	colorCalculator := m.colorCalculator()
 	for x := 0; x < m.Width; x++ {
 		for y := 0; y < m.Height; y++ {
