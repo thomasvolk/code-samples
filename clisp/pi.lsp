@@ -1,3 +1,8 @@
+;;;; This code calculates PI 
+;;;; The formular is from Kelallur Nilakantha Somayaji (1444-1544)
+
+;;;; Run this with: sbcl --script pi.lsp
+
 (proclaim '(optimize speed))
 
 (defun pi_step (cnt val num e) 
